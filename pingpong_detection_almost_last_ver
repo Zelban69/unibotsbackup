@@ -39,8 +39,8 @@ bounding_box_annotator = sv.BoundingBoxAnnotator()
 label_annotator = sv.LabelAnnotator()
 
 
-command_counts = {'right_move': 0, 'left_move': 0, 'forward_move': 0, 'stop': 0 'random': 0}
-command_thresholds = {'right_move': 3, 'left_move': 3, 'forward_move': 3, 'stop': 3 'random' }
+command_counts = {'right_move': 0, 'left_move': 0, 'forward_move': 0, 'stop': 0 ,'searching': 0}
+#command_thresholds = {'right_move': 3, 'left_move': 3, 'forward_move': 3, 'stop': 3 'random' }
 last_sent_command = None
 
 while True:
@@ -125,12 +125,14 @@ while True:
             # elif cy > frame_center_y + vertical_threshold:
             #     command += " and backward"
     if not detections:
-        command = "stop"  # No significant horizontal movement needed
+        command = "searching"  # No significant horizontal movement needed
         command_counts[command] += 1  # This assumes you want to count 'stop' commands too
         if command_counts[command] >= 5:
                 ser.write(f"{command}\n".encode('utf-8'))
                 command_counts[command] = 0
-                print("no detections")
+                print("searching")
+                
+         
 
     
     # Annotate the frame with inference results
@@ -142,4 +144,5 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
 
