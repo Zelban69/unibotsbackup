@@ -39,8 +39,8 @@ bounding_box_annotator = sv.BoundingBoxAnnotator()
 label_annotator = sv.LabelAnnotator()
 
 
-command_counts = {'right_move': 0, 'left_move': 0, 'forward_move': 0, 'stop': 0}
-command_thresholds = {'right_move': 3, 'left_move': 3, 'forward_move': 3, 'stop': 3}
+command_counts = {'right_move': 0, 'left_move': 0, 'forward_move': 0, 'stop': 0 'random': 0}
+command_thresholds = {'right_move': 3, 'left_move': 3, 'forward_move': 3, 'stop': 3 'random' }
 last_sent_command = None
 
 while True:
@@ -109,28 +109,28 @@ while True:
                     command_counts[command] = 0
                     print("F")
                 
-            elif float(areas[0]) > 1.5: 
+            elif float(areas[0]) > 1.5 or len(detections) == 0: 
                 command = "stop"  # No significant horizontal movement needed
                 command_counts[command] += 1  # This assumes you want to count 'stop' commands too
                 if command_counts[command] >= 5:
                     ser.write(f"{command}\n".encode('utf-8'))
                     command_counts[command] = 0
                     print("stop")
-                    
-        if not detections:
-        # No detections, send stop command
-            ser.write("stop\n".encode('utf-8'))
-
-            # Vertical movement
+             
+                   # Vertical movement
             #REMOVE AND REPLACE WITH LOGIC FOR BOX AREA GETTING BIGGER AS ROBOT APPROACHES
             # Assuming moving forward is decreasing y (up in the frame) and backward is increasing y
             # if cy < frame_center_y - vertical_threshold:  # Adjust vertical_threshold
             #     command += " and forward"
             # elif cy > frame_center_y + vertical_threshold:
             #     command += " and backward"
-
-            # Reset the count for other commands since we are now tracking a new one
-    
+    if not detections:
+        command = "stop"  # No significant horizontal movement needed
+        command_counts[command] += 1  # This assumes you want to count 'stop' commands too
+        if command_counts[command] >= 5:
+                ser.write(f"{command}\n".encode('utf-8'))
+                command_counts[command] = 0
+                print("no detections")
 
     
     # Annotate the frame with inference results
