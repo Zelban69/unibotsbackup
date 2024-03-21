@@ -16,20 +16,20 @@ class Position(Enum):
 # Initialize the webcam
 camera = cv2.VideoCapture(0)
 # Set resolution of camera
-camera.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
-camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 # Check if the resolution was set correctly
 ret, frame = camera.read()
 if ret:
     # Print the resolution of the frame
     height, width, channels = frame.shape
-    print(f"Set Resolution: Width = 320, Height = 240")
+    print(f"Set Resolution: Width = 640, Height = 480")
     print(f"Actual Resolution: Width = {width}, Height = {height}")
 else:
     print("Failed to grab frame from camera.")
 
 # Initialize serial communication with Arduino
-ser = serial.Serial(port='COM4', baudrate=9600, timeout=0.1)  # Update serial port as needed
+ser = serial.Serial(port='COM6', baudrate=9600, timeout=0.1)  # Update serial port as needed
 
 # Load a pre-trained model of your choice, here using YOLOv8n as an example
 model = get_roboflow_model(model_id="ping-pong-finder-w6mxk/9")
@@ -53,7 +53,7 @@ while True:
     # Load the results into the supervision Detections API
     detections = sv.Detections.from_inference(results[0].dict(by_alias=True, exclude_none=True))
     # confidence level 
-    detections = detections[detections.confidence > 0.65]
+    detections = detections[detections.confidence > 0.6]
     # specify class id, in this case id = 2 is white ping pong
     detections = detections[detections.class_id == 2]
 
@@ -116,6 +116,11 @@ while True:
                     ser.write(f"{command}\n".encode('utf-8'))
                     command_counts[command] = 0
                     print("stop")
+                    
+        if not detections:
+        # No detections, send stop command
+            ser.write("stop\n".encode('utf-8'))
+
             # Vertical movement
             #REMOVE AND REPLACE WITH LOGIC FOR BOX AREA GETTING BIGGER AS ROBOT APPROACHES
             # Assuming moving forward is decreasing y (up in the frame) and backward is increasing y
@@ -137,3 +142,4 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
