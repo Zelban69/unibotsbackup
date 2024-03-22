@@ -1,3 +1,8 @@
+#include <ESP32Servo.h> 
+
+Servo LeScooper; 
+#define LeScooperPin 4
+
 const int freq = 5000;
 const int resolution = 8;
 
@@ -30,6 +35,7 @@ void setup() {
   pinMode(motorRightBack_Bwd, OUTPUT);
   pinMode(enablePin1,OUTPUT);
   pinMode(enablePin2, OUTPUT);
+  LeScooper.attach(LeScooperPin);
   //pinMode(enablePin3, OUTPUT);
   // Start serial communication
   Serial.begin(9600);
@@ -53,7 +59,7 @@ void right_move(int throttle){
   analogWrite(motorRightFront_Bwd, throttle);
   analogWrite(motorRightBack_Fwd, throttle);
   // Pause for the movement to take effect
-  //delay(15); // Adjust this delay to your needs
+  delay(100); // Adjust this delay to your needs
 
   // Reset pins after the movement
   resetMotorPins();
@@ -65,7 +71,7 @@ void left_move(int throttle){
   analogWrite(motorRightFront_Fwd, throttle);
   analogWrite(motorRightBack_Bwd, throttle);
   // Pause for the movement to take effect
-  //delay(15); // Adjust this delay to your needs
+  delay(100); // Adjust this delay to your needs
 
   // Reset pins after the movement
   resetMotorPins();
@@ -82,7 +88,10 @@ void stop_move() {
   analogWrite(motorLeftBack_Bwd, 0);
   analogWrite(motorRightFront_Bwd, 0);
   analogWrite(motorRightBack_Bwd, 0);
-
+  delay(100);
+  stop_and_scoop();
+  delay(50);
+  resetMotorPins();
   //delay(15);
 }
 
@@ -102,10 +111,18 @@ void clockwise_move(int throttle){
   analogWrite(motorLeftBack_Fwd, throttle);
   analogWrite(motorRightFront_Bwd, throttle);
   analogWrite(motorRightBack_Bwd, throttle);
+
 }
 
+void stop_and_scoop() {
+  LeScooper.write(0);
+  delay(50);
+  LeScooper.write(90); // Turn servo to 90 degrees
+  delay(300);  
+  LeScooper.write(0);
+  delay(100);
+}
 
-//PUT MOVEMENT CODE INTO HERE NSTEAD AND TEST
 void loop() {
   
   digitalWrite(enablePin1,HIGH);
@@ -128,16 +145,16 @@ void loop() {
 
     if (command.equals("forward_move")) {
       
-      forward_move(25);
+      forward_move(45);
     } else if (command.equals("left_move")) {
-      const int throttle = 25;
+      const int throttle = 45;
       analogWrite(motorLeftFront_Bwd, throttle);
       analogWrite(motorLeftBack_Fwd, throttle);
       analogWrite(motorRightFront_Fwd, throttle);
       analogWrite(motorRightBack_Bwd, throttle);
 
     } else if (command.equals("right_move")) {
-      right_move(25);
+      right_move(45);
     } else if (command.equals("stop")) {
       stop_move();
     } else if (command.equals("searching")) {
@@ -145,3 +162,5 @@ void loop() {
     }
   }
 }
+
+
