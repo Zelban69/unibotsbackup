@@ -12,7 +12,6 @@ class Position(Enum):
     CENTER_LEFT=auto()
     BOTTOM_RIGHT=auto()
 
-
 # Initialize the webcam
 camera = cv2.VideoCapture(0)
 # Set resolution of camera
@@ -101,22 +100,22 @@ while True:
                     command_counts[command] = 0
                     print("R")
                 
-            elif float(areas[0]) < 1.5:
+            elif float(areas[0]) < 1.2:
                 command = "forward_move"
                 command_counts[command] += 1
                 if command_counts[command] >= 5:
                     ser.write(f"{command}\n".encode('utf-8'))
                     command_counts[command] = 0
                     print("F")
-                
-            elif float(areas[0]) > 1.5 or len(detections) == 0: 
+                    
+            elif float(areas[0]) > 2.5 or len(detections) == 0: 
                 command = "stop"  # No significant horizontal movement needed
                 command_counts[command] += 1  # This assumes you want to count 'stop' commands too
                 if command_counts[command] >= 5:
                     ser.write(f"{command}\n".encode('utf-8'))
                     command_counts[command] = 0
                     print("stop")
-             
+                    print(areas[0]) 
                    # Vertical movement
             #REMOVE AND REPLACE WITH LOGIC FOR BOX AREA GETTING BIGGER AS ROBOT APPROACHES
             # Assuming moving forward is decreasing y (up in the frame) and backward is increasing y
@@ -144,5 +143,5 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
+                            
 
