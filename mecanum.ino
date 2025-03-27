@@ -145,21 +145,24 @@ void loop() {
 
     if (command.equals("forward_move")) {
       
-      forward_move(45);
+      forward_move(70);
     } else if (command.equals("left_move")) {
-      const int throttle = 45;
+      const int throttle = 70;
       analogWrite(motorLeftFront_Bwd, throttle);
       analogWrite(motorLeftBack_Fwd, throttle);
       analogWrite(motorRightFront_Fwd, throttle);
       analogWrite(motorRightBack_Bwd, throttle);
 
     } else if (command.equals("right_move")) {
-      right_move(45);
+      right_move(70);
     } else if (command.equals("stop")) {
       stop_move();
     } else if (command.equals("searching")) {
-      clockwise_move(25);
+      clockwise_move(50);
     }
+  }
+}
+
   }
 }
 
